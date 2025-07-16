@@ -4,7 +4,7 @@ Submitted by: **Cinthia Ochoa Torre**
 
 This web app: **BrewDash is a brewery dashboard that fetches data from the Open Brewery DB API and allows users to view, search, and filter information about breweries in the United States. It features summary statistics, a stylish UI, and dynamic data filtering.**
 
-Time spent: **X hours spent in total**
+Time spent: **4 hours spent in total**
 
 ---
 
