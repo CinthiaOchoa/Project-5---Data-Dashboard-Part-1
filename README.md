@@ -56,7 +56,6 @@ The following **optional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://imgur.com/a/ZX3koQv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 [Video Walkthrough](https://imgur.com/a/ZX3koQv)
 
 GIF created with: **Imgur** (replace with what you used)
