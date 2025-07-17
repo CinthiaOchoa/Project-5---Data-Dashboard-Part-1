@@ -46,13 +46,6 @@ Here's a walkthrough of implemented user stories:
 
 GIF created with: **Imgur** (replace with what you used)
 
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  
-<!-- Recommended tools:
-[Kap](https://getkap.co/) for macOS
-[ScreenToGif](https://www.screentogif.com/) for Windows
-[peek](https://github.com/phw/peek) for Linux. -->
-
 ## Notes
 
 During development, managing the multiple dependent filters (state → city) and pagination together was challenging to keep consistent. Also, ensuring the API data included enough unique entries for a smooth UX required testing with the right parameters.
