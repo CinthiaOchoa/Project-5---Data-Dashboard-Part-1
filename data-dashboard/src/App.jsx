@@ -1,97 +1,161 @@
-
-
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
   const [breweries, setBreweries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [stateFilter, setStateFilter] = useState('');
-  const [minId, setMinId] = useState('');
-  const [maxId, setMaxId] = useState('');
+  const [search, setSearch] = useState('');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [page, setPage] = useState(1);
+  const perPage = 25;
 
   useEffect(() => {
-    const fetchBreweries = async () => {
-      try {
-        const response = await fetch('https://api.openbrewerydb.org/breweries');
-        const data = await response.json();
-        setBreweries(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchBreweries();
+    async function fetchData() {
+      const res = await fetch('https://api.openbrewerydb.org/v1/breweries?by_country=United_States&per_page=162');
+      const data = await res.json();
+      setBreweries(data);
+    }
+    fetchData();
   }, []);
 
-  const filteredBreweries = breweries.filter((brewery) => {
-    return (
-      brewery.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (!stateFilter || brewery.state.toLowerCase() === stateFilter.toLowerCase()) &&
-      (!minId || brewery.id >= parseInt(minId)) &&
-      (!maxId || brewery.id <= parseInt(maxId))
-    );
-  });
+  // Unique states, cities (filtered by state), and types
+  const states = Array.from(new Set(breweries.map(b => b.state))).sort();
 
-  const uniqueStates = [...new Set(breweries.map(b => b.state))].sort();
+  const cities = selectedState
+    ? Array.from(new Set(breweries.filter(b => b.state === selectedState).map(b => b.city))).sort()
+    : [];
 
-  const totalBreweries = breweries.length;
-  const lowestId = breweries.reduce((min, b) => (b.id < min ? b.id : min), breweries[0]?.id || 0);
-  const statesCount = uniqueStates.length;
+  const types = Array.from(new Set(breweries.map(b => b.brewery_type))).sort();
+
+  // Filtering breweries by all filters
+  let filtered = breweries.filter(b =>
+    b.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (selectedState) {
+    filtered = filtered.filter(b => b.state === selectedState);
+  }
+  if (selectedCity) {
+    filtered = filtered.filter(b => b.city === selectedCity);
+  }
+  if (selectedType) {
+    filtered = filtered.filter(b => b.brewery_type === selectedType);
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const displayedBreweries = filtered.slice((page - 1) * perPage, page * perPage);
+
+  const filteredStatesCount = new Set(filtered.map(b => b.state)).size;
 
   return (
     <div className="app">
       <aside className="sidebar">
-        <div className="sidebar-item clickable">📊 <a href="#dashboard">Dashboard</a></div>
-        <div className="sidebar-item clickable">🍺 <a href="#breweries">Brewery List</a></div>
-        <div className="sidebar-item clickable">📘 <a href="#about">About</a></div>
+        <h2 className="logo">🍺 BrewDash</h2>
+        <nav>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#search">Search</a>
+        </nav>
       </aside>
-      <main className="dashboard">
-        <h1 className="header">Brewery Dashboard</h1>
 
-        <div className="stats-row">
-          <div className="stat-card">Total Breweries <span>{totalBreweries || 'N/A'}</span></div>
-          <div className="stat-card">Lowest ID <span>{lowestId}</span></div>
-          <div className="stat-card">States <span>{statesCount}</span></div>
+      <main className="dashboard">
+        <h1>Brewery Dashboard</h1>
+
+        <div style={{ marginBottom: '1rem', fontWeight: 'bold', fontSize: '1.2rem' }}>
+          Breweries — States: {filteredStatesCount} | Breweries: {filtered.length}
         </div>
 
-        <div className="filters">
+        <div className="controls" style={{ gap: '1rem' }}>
           <input
             type="text"
-            placeholder="Search by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search breweries by name..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: 1, minWidth: '200px' }}
           />
-          <select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-            <option value="">Filter by State</option>
-            {uniqueStates.map((state) => (
+
+          <select
+            value={selectedState}
+            onChange={e => {
+              setSelectedState(e.target.value);
+              setSelectedCity('');
+              setPage(1);
+            }}
+            style={{ minWidth: '150px' }}
+          >
+            <option value="">All States</option>
+            {states.map(state => (
               <option key={state} value={state}>{state}</option>
             ))}
           </select>
-          <input
-            type="number"
-            placeholder="Min ID"
-            value={minId}
-            onChange={(e) => setMinId(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Max ID"
-            value={maxId}
-            onChange={(e) => setMaxId(e.target.value)}
-          />
+
+          {selectedState && (
+            <select
+              value={selectedCity}
+              onChange={e => {
+                setSelectedCity(e.target.value);
+                setPage(1);
+              }}
+              style={{ minWidth: '150px' }}
+            >
+              <option value="">All Cities</option>
+              {cities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          )}
+
+          {/* Brewery type dropdown */}
+          <select
+            value={selectedType}
+            onChange={e => {
+              setSelectedType(e.target.value);
+              setPage(1);
+            }}
+            style={{ minWidth: '150px' }}
+          >
+            <option value="">All Types</option>
+            {types.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
         </div>
 
-        <div className="brewery-list">
-          {filteredBreweries.slice(0, 10).map((brewery) => (
-            <div key={brewery.id} className="brewery-card">
-              <h3>{brewery.name}</h3>
-              <p>{brewery.city}, {brewery.state}</p>
-              <p>Type: {brewery.brewery_type}</p>
-              <a href={brewery.website_url} target="_blank" rel="noopener noreferrer">Visit Website</a>
+        <div className="table">
+          <div className="table-header">
+            <div>Name</div><div>Type</div><div>City</div><div>State</div>
+          </div>
+          {displayedBreweries.map(b => (
+            <div className="table-row" key={b.id}>
+              <div>{b.name}</div>
+              <div>{b.brewery_type}</div>
+              <div>{b.city}</div>
+              <div>{b.state}</div>
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span>Page {page} of {totalPages}</span>
+            <button
+              onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={page === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );

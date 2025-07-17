@@ -1,87 +1,61 @@
-# Web Development Project 5 - 🍺 BrewDash
+# Web Development Project 5 - BrewDash
 
 Submitted by: **Cinthia Ochoa Torre**
 
-This web app: **BrewDash is a brewery dashboard that fetches data from the Open Brewery DB API and allows users to view, search, and filter information about breweries in the United States. It features summary statistics, a stylish UI, and dynamic data filtering.**
+This web app: **BrewDash is a brewery dashboard that fetches brewery data from the Open Brewery DB API for the United States. It allows users to search breweries by name, filter by state, city, and brewery type, and paginate through results. It displays brewery details in a clean, user-friendly dashboard.**
 
-Time spent: **4 hours spent in total**
+Time spent: **10** hours spent in total
 
----
-
-## ✅ Required Features
+## Required Features
 
 The following **required** functionality is completed:
 
 - [x] **The site has a dashboard displaying a list of data fetched using an API call**
-  - The dashboard displays 10+ unique breweries, one per row
-  - Each row includes the brewery's name, type, date, and state
-- [x] **`useEffect` React hook and `async`/`await` are used** to fetch API data
-- [x] **The app dashboard includes at least three summary statistics:**
-  - Total number of breweries
-  - Brewery with the lowest ID
-  - Number of unique states represented
+  - The dashboard displays at least 25 unique brewery items, one per row
+  - The dashboard includes at least four features in each row (Name, Type, City, State)
+- [x] **`useEffect` React hook and `async`/`await` are used**
+- [x] **The app dashboard includes at least three summary statistics about the data** 
+  - The app dashboard includes summary counts of:
+    - Number of states displayed
+    - Number of breweries displayed
 - [x] **A search bar allows the user to search for an item in the fetched data**
-  - Filters dynamically as the user types
-- [x] **An additional filter allows the user to restrict displayed items by category**
-  - Brewery type (dropdown)
-  - State (dropdown)
-  - Minimum and maximum brewery ID (number inputs)
-  - Dashboard list dynamically updates with filters
-
----
-
-## ✨ Optional Features
+  - The search bar **correctly** filters breweries by name in the list
+  - The list of results dynamically updates as the user types into the search bar
+- [x] **An additional filter allows the user to restrict displayed items by specified categories**
+  - Filters include dropdowns to restrict breweries by:
+    - State
+    - City (dependent on selected state)
+    - Brewery type
+  - Filters **correctly** filter breweries and update the dashboard dynamically
 
 The following **optional** features are implemented:
 
-- [x] Multiple filters can be applied simultaneously
-- [x] Filters use different input types:
-  - Text input (search)
-  - Dropdown menus (type and state)
-  - Numeric inputs (min/max ID)
-- [x] The user can enter specific bounds for ID values
+- [x] Multiple filters can be applied simultaneously (name search + state + city + type)
+- [x] Filters use different input types (text input, dropdown selectors)
+- [ ] The user can enter specific bounds for filter values (not implemented)
 
----
+The following **additional** features are implemented:
 
-## 🛠️ Additional Features
-
-- [x] Color styling ensures text is readable against background
-- [x] Sidebar navigation boxes are styled and clickable
-- [x] Responsive layout for better accessibility
-- [x] Future-ready: navigation items like “Dashboard,” “Search,” and “About” are already clickable and ready to be routed
-
----
+- [x] Pagination to display 25 breweries per page with Previous and Next buttons
 
 ## 🎥 Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
-[Video Walkthrough](https://imgur.com/a/ZX3koQv)
+
+[Video Walkthrough](https://imgur.com/a/wFEKcrk)
 
 GIF created with: **Imgur** (replace with what you used)
 
----
+<!-- Replace this with whatever GIF tool you used! -->
+GIF created with ...  
+<!-- Recommended tools:
+[Kap](https://getkap.co/) for macOS
+[ScreenToGif](https://www.screentogif.com/) for Windows
+[peek](https://github.com/phw/peek) for Linux. -->
 
-## 📝 Notes
+## Notes
 
-Challenges encountered:
-- Ensuring all filters worked together dynamically
-- Making form elements readable in dark UI
-- Styling the layout to match the design mockup while maintaining accessibility
+During development, managing the multiple dependent filters (state → city) and pagination together was challenging to keep consistent. Also, ensuring the API data included enough unique entries for a smooth UX required testing with the right parameters.
 
----
+## License
 
-## 📄 License
-
-    Copyright 2025 Your Name
-
-    Licensed under the Apache License, Version 2.0 (the \"License\");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an \"AS IS\" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
