@@ -1,75 +1,69 @@
-// Main layout based on your screenshot
-// This is a base App.jsx file to mimic the style and layout with brewery data
+
 
 import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
   const [breweries, setBreweries] = useState([]);
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('');
   const [minId, setMinId] = useState('');
   const [maxId, setMaxId] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('https://api.openbrewerydb.org/breweries');
-      const data = await res.json();
-      setBreweries(data);
+    const fetchBreweries = async () => {
+      try {
+        const response = await fetch('https://api.openbrewerydb.org/breweries');
+        const data = await response.json();
+        setBreweries(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
-    fetchData();
+
+    fetchBreweries();
   }, []);
 
-  const filtered = breweries
-    .filter((b) => b.name.toLowerCase().includes(search.toLowerCase()))
-    .filter((b) => (typeFilter ? b.brewery_type === typeFilter : true))
-    .filter((b) => (stateFilter ? b.state === stateFilter : true))
-    .filter((b) => (minId ? parseInt(b.id) >= parseInt(minId) : true))
-    .filter((b) => (maxId ? parseInt(b.id) <= parseInt(maxId) : true));
+  const filteredBreweries = breweries.filter((brewery) => {
+    return (
+      brewery.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!stateFilter || brewery.state.toLowerCase() === stateFilter.toLowerCase()) &&
+      (!minId || brewery.id >= parseInt(minId)) &&
+      (!maxId || brewery.id <= parseInt(maxId))
+    );
+  });
 
-  const lowestBrewery = breweries.reduce((min, b) =>
-    b.id < min.id ? b : min,
-    breweries[0] || { name: 'N/A' }
-  );
+  const uniqueStates = [...new Set(breweries.map(b => b.state))].sort();
 
-  const uniqueStates = Array.from(new Set(breweries.map(b => b.state))).sort();
+  const totalBreweries = breweries.length;
+  const lowestId = breweries.reduce((min, b) => (b.id < min ? b.id : min), breweries[0]?.id || 0);
+  const statesCount = uniqueStates.length;
 
   return (
-    <div className="app bg-space text-white">
+    <div className="app">
       <aside className="sidebar">
-        <h1 className="logo">
-          <a href="#" style={{ color: 'white', textDecoration: 'none' }}>🍺 BrewDash</a>
-        </h1>
-        <nav className="nav-box">
-          <a className="nav-item" href="#dashboard">🏠 Dashboard</a>
-          <a className="nav-item" href="#search">🔍 Search</a>
-          <a className="nav-item" href="#about">ℹ️ About</a>
-        </nav>
+        <div className="sidebar-item clickable">📊 <a href="#dashboard">Dashboard</a></div>
+        <div className="sidebar-item clickable">🍺 <a href="#breweries">Brewery List</a></div>
+        <div className="sidebar-item clickable">📘 <a href="#about">About</a></div>
       </aside>
-
       <main className="dashboard">
-        <div className="stats">
-          <div className="stat-box" style={{ color: '#ffdd57' }}>{breweries.length} <span style={{ display: 'block', color: '#fff' }}>Total Breweries</span></div>
-          <div className="stat-box" style={{ color: '#7fffd4' }}>{lowestBrewery?.name || 'N/A'} <span style={{ display: 'block', color: '#fff' }}>Lowest ID</span></div>
-          <div className="stat-box" style={{ color: '#add8e6' }}>{uniqueStates.length} <span style={{ display: 'block', color: '#fff' }}>States</span></div>
+        <h1 className="header">Brewery Dashboard</h1>
+
+        <div className="stats-row">
+          <div className="stat-card">Total Breweries <span>{totalBreweries || 'N/A'}</span></div>
+          <div className="stat-card">Lowest ID <span>{lowestId}</span></div>
+          <div className="stat-card">States <span>{statesCount}</span></div>
         </div>
 
-        <div className="controls">
+        <div className="filters">
           <input
             type="text"
-            placeholder="Search brewery name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="">All Types</option>
-            <option value="micro">Micro</option>
-            <option value="regional">Regional</option>
-            <option value="brewpub">Brewpub</option>
-          </select>
           <select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)}>
-            <option value="">All States</option>
+            <option value="">Filter by State</option>
             {uniqueStates.map((state) => (
               <option key={state} value={state}>{state}</option>
             ))}
@@ -88,19 +82,13 @@ function App() {
           />
         </div>
 
-        <div className="table">
-          <div className="table-header">
-            <div>Date</div>
-            <div>Name</div>
-            <div>Type</div>
-            <div>State</div>
-          </div>
-          {filtered.map((b) => (
-            <div key={b.id} className="table-row">
-              <div>{new Date().toISOString().split('T')[0]}</div>
-              <div>{b.name}</div>
-              <div>{b.brewery_type}</div>
-              <div>{b.state}</div>
+        <div className="brewery-list">
+          {filteredBreweries.slice(0, 10).map((brewery) => (
+            <div key={brewery.id} className="brewery-card">
+              <h3>{brewery.name}</h3>
+              <p>{brewery.city}, {brewery.state}</p>
+              <p>Type: {brewery.brewery_type}</p>
+              <a href={brewery.website_url} target="_blank" rel="noopener noreferrer">Visit Website</a>
             </div>
           ))}
         </div>
