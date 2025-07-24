@@ -1,11 +1,13 @@
-function BreweryCard({ brewery }) {
+import { Link } from 'react-router-dom';
+
+export default function BreweryCard({ brewery }) {
   return (
-    <div className="border p-4 m-2 rounded shadow">
-      <h2 className="font-bold text-lg">{brewery.name}</h2>
-      <p>{brewery.city}, {brewery.state}</p>
-      <p>Type: {brewery.brewery_type}</p>
-    </div>
+    <Link to={`/details/${brewery.id}`}>
+      <div className="border p-3 rounded-lg hover:shadow-md">
+        <h3 className="text-lg font-semibold">{brewery.name}</h3>
+        <p>{brewery.city}, {brewery.state}</p>
+        <p>{brewery.brewery_type}</p>
+      </div>
+    </Link>
   );
 }
-
-export default BreweryCard;
